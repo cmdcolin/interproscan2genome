@@ -40,14 +40,20 @@ const args = {
 }) {
   const map1 = {} as Record<string, Feat[]>
 
-  gff.parseStringSync(fs.readFileSync(interproGFF, 'utf8'), args).map(feat => {
-    // @ts-expect-error
-    const f = featureData(feat[0])
-    if (!map1[f.refName]) {
-      map1[f.refName] = [] as Feat[]
-    }
-    map1[f.refName].push(f)
-  })
+  await new Promise((resolve, reject) =>
+    fs
+      .createReadStream(interproGFF)
+      .pipe(gff.parseStream(args))
+      .on('data', (feat: GFF3FeatureLineWithRefs[]) => {
+        const f = featureData(feat[0])
+        if (!map1[f.refName]) {
+          map1[f.refName] = [] as Feat[]
+        }
+        map1[f.refName].push(f)
+      })
+      .on('finish', resolve)
+      .on('error', reject),
+  )
 
   fs.createReadStream(genomeGFF)
     .pipe(gff.parseStream(args))
