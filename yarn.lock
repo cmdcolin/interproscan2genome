@@ -133,11 +133,9 @@ foreground-child@^3.1.0:
     signal-exit "^4.0.1"
 
 g2p_mapper@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/g2p_mapper/-/g2p_mapper-1.0.4.tgz#243730c33d92b093f61a18b05479465f67bd8612"
-  integrity sha512-Os3yuQZcTSuGbO4A7NuXmcfIu80IeOjyZYZ4Eow9Af0sb6IlcmymcA99gYjRUk4enKjRFAXjnCw6Y4rw7S7yww==
-  dependencies:
-    yargs "^17.7.2"
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/g2p_mapper/-/g2p_mapper-1.0.6.tgz#be6b9aee9f2af801f7c1d05f8b093807c744aa9d"
+  integrity sha512-j7YHQxgtdBiAlo1RGoRTBotNnXDbQGrF7x4M0Eq4+8ntqs2q5FPaJO6XU5G6VTVhmt0qG2tz4tOAQyI+juf/5w==
 
 get-caller-file@^2.0.5:
   version "2.0.5"
