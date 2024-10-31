@@ -60,30 +60,48 @@ const args = {
     .on('data', (feat: GFF3FeatureLineWithRefs[]) => {
       const f = featureData(feat[0])
       if (f.type === 'mRNA' || f.type === 'transcript') {
-        const r = genomeToTranscriptSeqMapping(f)
-        const match = map1[f.id]
-        match?.forEach(row => {
-          const { p2g, refName, strand } = r
-          const {
-            refName: _k1,
-            phase: _k2,
-            type: _k3,
-            strand: _k4,
-            subfeatures: _k5,
-            start,
-            end,
-            ...rest
-          } = row
-          const s = p2g[Math.floor(start / 3)]!
-          const e = p2g[Math.floor(end / 3) - 1]!
-          console.log(
-            `${refName}\tinterpro\tprotein_domain\t${Math.min(s, e)}\t${Math.max(s, e)}\t.\t${strand}\t.\tID=${f.id};${Object.entries(
-              rest,
-            )
-              .map(([key, val]) => `${key}=${encodeURIComponent(`${val}`)}`)
-              .join(';')}`,
-          )
+        processTranscript(f, map1)
+      } else if (f.type === 'gene') {
+        f.subfeatures?.map(transcript => {
+          processTranscript(transcript, map1)
         })
       }
     })
 })(ret)
+
+function processTranscript(transcript: Feat, map: Record<string, Feat[]>) {
+  const r = genomeToTranscriptSeqMapping(transcript)
+  const match = map[transcript.id]
+  match?.forEach(row => {
+    const { p2g, refName, strand } = r
+    const {
+      refName: _k1,
+      phase: _k2,
+      type: _k3,
+      strand: _k4,
+      subfeatures: _k5,
+      // @ts-expect-error
+      derived_features: _k6,
+      id,
+      // @ts-expect-error
+      name,
+      // @ts-expect-error
+      target,
+      // @ts-expect-error
+      source,
+      start,
+      end,
+      ...rest
+    } = row
+    const s = p2g[Math.floor(start / 3)]!
+    const e = p2g[Math.floor(end / 3) - 1]!
+    console.log(
+      `${refName}\t${source || '.'}\tprotein_domain\t${Math.min(s, e)}\t${Math.max(s, e)}\t.\t${strand}\t.\t${Object.entries(
+        { ...rest, ID: id, Name: name, Target: target },
+      )
+        .filter(f => !!f[1])
+        .map(([key, val]) => `${key}=${val}`)
+        .join(';')}`,
+    )
+  })
+}
